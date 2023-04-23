@@ -1,4 +1,4 @@
-param vmUserName string = 'azureChad'
+param vmUserName string = 'your-vm-name'
 @secure()
 param vmPass string
 
