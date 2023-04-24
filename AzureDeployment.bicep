@@ -1,10 +1,31 @@
-param vmUserName string = 'your-vm-name'
+@description('Enter the vm username')
+param vmUserName string
+
+@description('VM user password')
 @secure()
 param vmPass string
 
-var location = resourceGroup().location
-var baseName = uniqueString(resourceGroup().id)
-var vmSize = 'Standard_B2s' 
+@description('the base name for the deployment')
+@maxLength(13)
+param baseName string
+
+@description('The Azure Region')
+param location string
+
+@description('The VM SKU. Only allowing 1 SKU')
+@allowed([
+    'standard_b2s'
+    'standard_b1s'
+])
+param vmSize string = 'standard_b2s'
+
+@description('The IP space for the virtual network in CIDR notation')
+param vnetIpRange string 
+
+
+@description('The IP space for the subnet in CIDR notation')
+param subnetIpRange string 
+
 var image = {
   windows: {
     publisher: 'MicrosoftWindowsServer'
@@ -117,14 +138,14 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   properties: {
     addressSpace: {
       addressPrefixes: [
-        '10.0.0.0/16'
+       vnetIpRange 
       ]
     }
     subnets: [
       {
         name: 'subnet${baseName}'
         properties: {
-          addressPrefix: '10.0.0.0/24'
+          addressPrefix: subnetIpRange
         }
       }
     ]
